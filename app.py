@@ -805,5 +805,8 @@ def update_view(tap_node_data, go_clicks, reset_clicks, direction, selected_sign
     return base_stylesheet(), DEFAULT_INFO, selected_signal_name
 
 
+import os
+
 if __name__ == "__main__":
-    app.run(debug=False)
+    port = int(os.environ.get("PORT", 8050))
+    app.run(host="0.0.0.0", port=port, debug=False)

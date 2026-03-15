@@ -1,0 +1,163 @@
+{
+  "swcs": [
+    {
+      "id": "SWC_INPUT",
+      "name": "InGateway",
+      "inputs": [],
+      "outputs": [
+        "AccelPedal",
+        "BrakePedal",
+        "WheelSpeedFL",
+        "SteeringAngle",
+        "BatterySOC"
+      ],
+      "dependencies": {}
+    },
+    {
+      "id": "SWC1",
+      "name": "Norm",
+      "inputs": [
+        "WheelSpeedFL",
+        "SteeringAngle"
+      ],
+      "outputs": [
+        "NormalizedWheelSpeed",
+        "NormalizedSteering"
+      ],
+      "dependencies": {
+        "NormalizedWheelSpeed": ["WheelSpeedFL"],
+        "NormalizedSteering": ["SteeringAngle"]
+      }
+    },
+    {
+      "id": "SWC2",
+      "name": "StateEst",
+      "inputs": [
+        "NormalizedWheelSpeed",
+        "NormalizedSteering"
+      ],
+      "outputs": [
+        "VehicleSpeed",
+        "YawRate"
+      ],
+      "dependencies": {
+        "VehicleSpeed": ["NormalizedWheelSpeed"],
+        "YawRate": ["NormalizedWheelSpeed", "NormalizedSteering"]
+      }
+    },
+    {
+      "id": "SWC3",
+      "name": "DrvIntent",
+      "inputs": [
+        "AccelPedal",
+        "BrakePedal",
+        "VehicleSpeed"
+      ],
+      "outputs": [
+        "DriverTorqueRequest",
+        "DriverBrakeRequest",
+        "LaunchDemand"
+      ],
+      "dependencies": {
+        "DriverTorqueRequest": ["AccelPedal", "VehicleSpeed"],
+        "DriverBrakeRequest": ["BrakePedal"],
+        "LaunchDemand": ["AccelPedal", "VehicleSpeed"]
+      }
+    },
+    {
+      "id": "SWC4",
+      "name": "Traction",
+      "inputs": [
+        "VehicleSpeed",
+        "YawRate",
+        "NormalizedWheelSpeed",
+        "BatterySOC"
+      ],
+      "outputs": [
+        "TractionCorrection",
+        "SlipDetected",
+        "AvailableTorqueFactor"
+      ],
+      "dependencies": {
+        "TractionCorrection": ["VehicleSpeed", "YawRate", "NormalizedWheelSpeed"],
+        "SlipDetected": ["NormalizedWheelSpeed", "YawRate"],
+        "AvailableTorqueFactor": ["BatterySOC", "VehicleSpeed"]
+      }
+    },
+    {
+      "id": "SWC5",
+      "name": "TorqueComp",
+      "inputs": [
+        "DriverTorqueRequest",
+        "LaunchDemand",
+        "TractionCorrection",
+        "SlipDetected",
+        "AvailableTorqueFactor"
+      ],
+      "outputs": [
+        "RequestedMotorTorque",
+        "TorqueLimit"
+      ],
+      "dependencies": {
+        "RequestedMotorTorque": [
+          "DriverTorqueRequest",
+          "LaunchDemand",
+          "TractionCorrection",
+          "AvailableTorqueFactor"
+        ],
+        "TorqueLimit": [
+          "SlipDetected",
+          "AvailableTorqueFactor"
+        ]
+      }
+    },
+    {
+      "id": "SWC6",
+      "name": "EnergyMgr",
+      "inputs": [
+        "RequestedMotorTorque",
+        "VehicleSpeed",
+        "BatterySOC"
+      ],
+      "outputs": [
+        "OptimizedTorque",
+        "RegenEnable"
+      ],
+      "dependencies": {
+        "OptimizedTorque": [
+          "RequestedMotorTorque",
+          "VehicleSpeed",
+          "BatterySOC"
+        ],
+        "RegenEnable": [
+          "VehicleSpeed",
+          "BatterySOC"
+        ]
+      }
+    },
+    {
+      "id": "SWC_OUTPUT",
+      "name": "OutDispatch",
+      "inputs": [
+        "OptimizedTorque",
+        "DriverBrakeRequest",
+        "TorqueLimit",
+        "RegenEnable"
+      ],
+      "outputs": [
+        "MotorTorqueCommand",
+        "BrakeCommand"
+      ],
+      "dependencies": {
+        "MotorTorqueCommand": [
+          "OptimizedTorque",
+          "TorqueLimit"
+        ],
+        "BrakeCommand": [
+          "DriverBrakeRequest",
+          "RegenEnable"
+        ]
+      }
+    }
+  ]
+}

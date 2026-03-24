@@ -1,0 +1,7 @@
+.trace-direction-options label {
+  color: #f7fafc !important;
+}
+
+.trace-direction-options input[type="radio"] {
+  accent-color: #21a9ff;
+}

@@ -1003,9 +1003,8 @@ app.layout = html.Div(
                         html.Div(
                             className="portfolio-card",
                             children=[
-                                html.H4("Most Recent Role", style={"marginTop": "0", "marginBottom": "8px"}),
-                                html.Div("Senior System Software Lead Engineer", style={"fontWeight": "700"}),
-                                html.Div("General Motors (Aug 2023 – Sep 2025)", style={"color": TEXT_MUTED, "marginBottom": "6px"}),
+                                html.H4("Senior System Software Lead Engineer", style={"marginTop": "0", "marginBottom": "8px"}),
+                                html.Div("General Motors (Aug 2023 – Sep 2025)", style={"fontWeight": "700", "marginBottom": "6px"}),
                                 html.Ul([
                                     html.Li("Leads SDV software power management integration across 7 lead programs."),
                                     html.Li("Orchestrated rollout across 60+ Tier 1 supplier ecosystems."),

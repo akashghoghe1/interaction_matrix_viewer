@@ -72,6 +72,15 @@ DEFAULT_INFO = (
     "Default trace mode is Upstream."
 )
 
+CREATOR_PROFILE = {
+    "name": "Akash Ghoghe",
+    "title": "Technical Program Lead | Automotive Software & Systems",
+    "location": "Novi, MI",
+    "email": "akashghoghe@outlook.com",
+    "phone": "+1 (407) 923-6537",
+    "linkedin": "linkedin.com/in/akashghoghe"
+}
+
 SYSTEM_BOUNDARY_ID = "SYSTEM_BOUNDARY"
 
 
@@ -754,6 +763,51 @@ app.layout = html.Div(
                         html.Div(
                             style={
                                 "display": "flex",
+                                "gap": "12px",
+                                "background": SURFACE_BG,
+                                "border": "1px solid #2B3745",
+                                "borderRadius": "12px",
+                                "padding": "12px",
+                                "marginBottom": "16px",
+                                "alignItems": "center"
+                            },
+                            children=[
+                                html.Img(
+                                    src="/assets/profile.jpg",
+                                    className="creator-photo",
+                                    style={
+                                        "width": "92px",
+                                        "height": "92px",
+                                        "borderRadius": "100%",
+                                        "objectFit": "cover",
+                                        "border": "2px solid #3E5368"
+                                    }
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            "Created & owned by",
+                                            style={"fontSize": "12px", "color": TEXT_MUTED, "textTransform": "uppercase"}
+                                        ),
+                                        html.Div(
+                                            CREATOR_PROFILE["name"],
+                                            style={"fontSize": "24px", "fontWeight": "700", "lineHeight": "1.2"}
+                                        ),
+                                        html.Div(
+                                            CREATOR_PROFILE["title"],
+                                            style={"fontSize": "14px", "color": TEXT_MUTED, "lineHeight": "1.35"}
+                                        ),
+                                        html.Div(
+                                            f'{CREATOR_PROFILE["location"]} • {CREATOR_PROFILE["linkedin"]}',
+                                            style={"fontSize": "13px", "color": ACCENT_BLUE, "marginTop": "4px"}
+                                        )
+                                    ]
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            style={
+                                "display": "flex",
                                 "gap": "10px",
                                 "alignItems": "center",
                                 "flexWrap": "wrap",
@@ -899,6 +953,67 @@ app.layout = html.Div(
                             userPanningEnabled=True,
                             boxSelectionEnabled=False,
                             autoungrabify=False
+                        )
+                    ]
+                )
+            ]
+        ),
+        html.Div(
+            style={
+                "marginTop": "18px",
+                "background": PANEL_BG,
+                "border": "1px solid #222B36",
+                "borderRadius": "14px",
+                "padding": "18px 20px"
+            },
+            children=[
+                html.Div(
+                    "Portfolio Snapshot",
+                    style={"color": ACCENT_BLUE, "fontWeight": "700", "fontSize": "22px", "marginBottom": "6px"}
+                ),
+                html.Div(
+                    "Professional background highlights for recruiters and hiring managers.",
+                    style={"color": TEXT_MUTED, "marginBottom": "14px", "fontSize": "16px"}
+                ),
+                html.Div(
+                    style={"display": "grid", "gridTemplateColumns": "repeat(auto-fit, minmax(260px, 1fr))", "gap": "12px"},
+                    children=[
+                        html.Div(
+                            className="portfolio-card",
+                            children=[
+                                html.H4("Current Role", style={"marginTop": "0", "marginBottom": "8px"}),
+                                html.Div("Senior System Software Lead Engineer", style={"fontWeight": "700"}),
+                                html.Div("General Motors (Aug 2023 – Sep 2025)", style={"color": TEXT_MUTED, "marginBottom": "6px"}),
+                                html.Ul([
+                                    html.Li("Leads SDV software power management integration across 7 lead programs."),
+                                    html.Li("Orchestrated rollout across 60+ Tier 1 supplier ecosystems."),
+                                    html.Li("Reduced rework by 25% and improved support/adoption by 30%.")
+                                ])
+                            ]
+                        ),
+                        html.Div(
+                            className="portfolio-card",
+                            children=[
+                                html.H4("ADAS V&V Leadership", style={"marginTop": "0", "marginBottom": "8px"}),
+                                html.Div("Ford Motor Company (Sep 2017 – Jul 2023)", style={"fontWeight": "700", "marginBottom": "6px"}),
+                                html.Ul([
+                                    html.Li("Scaled global ADAS validation benches from 1 to 38."),
+                                    html.Li("Cut manual effort by 60% with CAN/LIN/ETH automation."),
+                                    html.Li("Accelerated cross-domain RCA turnaround by 40%.")
+                                ])
+                            ]
+                        ),
+                        html.Div(
+                            className="portfolio-card",
+                            children=[
+                                html.H4("Education & Certifications", style={"marginTop": "0", "marginBottom": "8px"}),
+                                html.Ul([
+                                    html.Li("M.S. Engineering Management — Trine University (May 2026)."),
+                                    html.Li("M.S. Electrical Engineering — UT Arlington."),
+                                    html.Li("B.E. Electrical Engineering — Gujarat Technological University."),
+                                    html.Li("DFSS Green Belt.")
+                                ])
+                            ]
                         )
                     ]
                 )

@@ -13,3 +13,11 @@ Notes:
 - `gunicorn` is included in `requirements.txt` for Render production startup.
 - If Render shows a Python syntax error that references `diff/index` text, trigger a **Clear build cache & deploy**
   so the service uses the latest clean source snapshot.
+
+## Personal profile section setup
+
+To show your own headshot in the "Created & owned by" section, add your image file at:
+
+- `assets/profile.jpg`
+
+You can keep the same filename, or update the `html.Img(src="/assets/profile.jpg")` path in `app.py`.

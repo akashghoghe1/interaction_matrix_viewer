@@ -5,3 +5,18 @@
 .trace-direction-options input[type="radio"] {
   accent-color: #21a9ff;
 }
+
+.portfolio-card {
+  background: #171e27;
+  border: 1px solid #2b3745;
+  border-radius: 12px;
+  padding: 14px;
+  color: #f7fafc;
+}
+
+.portfolio-card ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #a9b4c0;
+  line-height: 1.4;
+}

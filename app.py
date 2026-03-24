@@ -451,7 +451,7 @@ def base_stylesheet():
                 "border-color": NORMAL_SWC_BORDER,
                 "border-width": 2,
                 "label": "data(label)",
-                "color": TEXT_DARK,
+                "color": TEXT_PRIMARY,
                 "font-size": 11,
                 "font-weight": "bold",
                 "text-valign": "bottom",
@@ -770,13 +770,7 @@ app.layout = html.Div(
                                     ],
                                     value="up",
                                     inline=True,
-                                    style={"color": TEXT_PRIMARY},
-                                    labelStyle={
-                                        "color": TEXT_PRIMARY,
-                                        "marginRight": "14px",
-                                        "fontWeight": "600"
-                                    },
-                                    inputStyle={"marginRight": "6px"}
+                                    style={"color": TEXT_PRIMARY}
                                 )
                             ]
                         ),

@@ -1,4 +1,6 @@
 import json
+import os
+from pathlib import Path
 from collections import defaultdict
 
 import networkx as nx
@@ -7,38 +9,42 @@ from dash.dependencies import Input, Output, State
 import dash_cytoscape as cyto
 
 
-APP_BG = "#0F1117"
-PANEL_BG = "#171B22"
-BOUNDARY_BG = "#1A1F29"
-BOUNDARY_BORDER = "#4B5563"
+APP_BG = "#07090D"
+PANEL_BG = "#11151C"
+SURFACE_BG = "#171E27"
+GRAPH_CANVAS_BG = "#E8EEF2"
+BOUNDARY_BG = "#DDE6EC"
+BOUNDARY_BORDER = "#9BAAB8"
 
-TEXT_PRIMARY = "#F3F4F6"
-TEXT_MUTED = "#C7CDD6"
+TEXT_PRIMARY = "#F7FAFC"
+TEXT_MUTED = "#A9B4C0"
+TEXT_DARK = "#0F172A"
+ACCENT_BLUE = "#21A9FF"
 
-NORMAL_SWC_COLOR = "#4472C4"       # presentation-style blue
-NORMAL_SWC_BORDER = "#7EA6FF"
+NORMAL_SWC_COLOR = "#2B8CBE"
+NORMAL_SWC_BORDER = "#67C7F3"
+IMPACTED_SWC_COLOR = "#FF8A4A"
+IMPACTED_SWC_BORDER = "#FFC39F"
+SELECTED_SIGNAL_COLOR = "#FF9F45"
+SELECTED_SIGNAL_BORDER = "#FFE2C3"
+HIGHLIGHT_SIGNAL_COLOR = "#FFE5C4"
+HIGHLIGHT_SIGNAL_BORDER = "#FFD09A"
 
-IMPACTED_SWC_COLOR = "#D32F2F"     # red
-IMPACTED_SWC_BORDER = "#FF8A80"
+SIGNAL_IN_BG = "#DCEAF3"
+SIGNAL_OUT_BG = "#CFE4D6"
+SIGNAL_BORDER = "#7E93A7"
 
-SELECTED_SIGNAL_COLOR = "#2E7D32"  # green
-SELECTED_SIGNAL_BORDER = "#81C784"
-
-HIGHLIGHT_SIGNAL_COLOR = "#FBC02D" # yellow
-HIGHLIGHT_SIGNAL_BORDER = "#FFE082"
-
-SIGNAL_IN_BG = "#2A303A"
-SIGNAL_OUT_BG = "#233327"
-SIGNAL_BORDER = "#6B7280"
-
-EDGE_COLOR = "#7C8CA5"
-EDGE_HIGHLIGHT = "#8AB4F8"
-BOUNDARY_EDGE = "#9AA4B2"
+EDGE_COLOR = "#6D7F90"
+EDGE_HIGHLIGHT = "#2296F3"
+BOUNDARY_EDGE = "#8AA0B2"
 
 # -----------------------------
 # Load data
 # -----------------------------
-with open("swc_data.json", "r", encoding="utf-8") as f:
+BASE_DIR = Path(__file__).resolve().parent
+DATA_FILE = BASE_DIR / "swc_data.json"
+
+with DATA_FILE.open("r", encoding="utf-8") as f:
     data = json.load(f)
 
 swcs = data["swcs"]
@@ -66,10 +72,14 @@ DEFAULT_INFO = (
     "Default trace mode is Upstream."
 )
 
-NORMAL_SWC_COLOR = "#1E88E5"        # blue
-IMPACTED_SWC_COLOR = "#D32F2F"      # red
-SELECTED_SIGNAL_COLOR = "#43A047"   # green
-HIGHLIGHT_SIGNAL_COLOR = "#FDD835"  # yellow
+CREATOR_PROFILE = {
+    "name": "Akash Ghoghe",
+    "title": "Technical Program Lead | Automotive Software & Systems",
+    "location": "Novi, MI",
+    "email": "akashghoghe@outlook.com",
+    "phone": "+1 (407) 923-6537",
+    "linkedin": "linkedin.com/in/akashghoghe"
+}
 
 SYSTEM_BOUNDARY_ID = "SYSTEM_BOUNDARY"
 
@@ -430,7 +440,7 @@ def base_stylesheet():
                 "border-width": 2,
                 "border-style": "dashed",
                 "label": "data(label)",
-                "color": TEXT_MUTED,
+                "color": "#4A5D70",
                 "font-size": 14,
                 "font-weight": "bold",
                 "text-valign": "top",
@@ -450,7 +460,7 @@ def base_stylesheet():
                 "border-color": NORMAL_SWC_BORDER,
                 "border-width": 2,
                 "label": "data(label)",
-                "color": TEXT_PRIMARY,
+                "color": TEXT_DARK,
                 "font-size": 11,
                 "font-weight": "bold",
                 "text-valign": "bottom",
@@ -475,7 +485,7 @@ def base_stylesheet():
                 "border-width": 1,
                 "label": "data(label)",
                 "font-size": 8,
-                "color": TEXT_PRIMARY,
+                "color": TEXT_DARK,
                 "text-halign": "center",
                 "text-valign": "center",
                 "text-wrap": "wrap",
@@ -613,7 +623,7 @@ def build_highlight_styles(selected_node_id, direction):
                     "background-color": HIGHLIGHT_SIGNAL_COLOR,
                     "border-color": HIGHLIGHT_SIGNAL_BORDER,
                     "border-width": 2,
-                    "color": "#111827"
+                    "color": TEXT_DARK
                 }
             })
 
@@ -625,7 +635,7 @@ def build_highlight_styles(selected_node_id, direction):
                 "background-color": SELECTED_SIGNAL_COLOR,
                 "border-color": SELECTED_SIGNAL_BORDER,
                 "border-width": 3,
-                "color": "white"
+                "color": TEXT_DARK
             }
         })
     else:
@@ -659,172 +669,355 @@ app = Dash(__name__)
 legend_box_style = {
     "display": "flex",
     "alignItems": "center",
-    "gap": "6px",
+    "gap": "8px",
     "marginRight": "18px",
     "color": TEXT_PRIMARY
 }
 
 legend_color_style = lambda color: {
-    "width": "18px",
-    "height": "18px",
+    "width": "14px",
+    "height": "14px",
     "backgroundColor": color,
-    "border": "1px solid rgba(255,255,255,0.25)",
-    "borderRadius": "4px",
+    "border": "1px solid rgba(255,255,255,0.35)",
+    "borderRadius": "100%",
     "display": "inline-block"
 }
 
 app.layout = html.Div(
     style={
-        "fontFamily": "Aptos, Calibri, Arial, sans-serif",
-        "padding": "16px",
+        "fontFamily": "Aptos, Inter, Segoe UI, Calibri, Arial, sans-serif",
+        "padding": "20px",
         "backgroundColor": APP_BG,
         "minHeight": "100vh",
-        "color": TEXT_PRIMARY
+        "color": TEXT_PRIMARY,
+        "boxSizing": "border-box"
     },
     children=[
-        html.H2(
-            "SWC Signal Dependency Viewer",
-            style={
-                "marginTop": "0",
-                "marginBottom": "12px",
-                "color": TEXT_PRIMARY,
-                "fontWeight": "700",
-                "letterSpacing": "0.2px"
-            }
-        ),
-
-        html.Div(
-            style={
-                 "display": "flex",
-                 "gap": "16px",
-                 "alignItems": "center",
-                 "flexWrap": "wrap",
-                 "marginBottom": "12px",
-                 "padding": "12px",
-                 "background": PANEL_BG,
-                 "border": f"1px solid {BOUNDARY_BORDER}",
-                 "borderRadius": "12px"
-            },
-            children=[
-                html.Div(
-                    children=[
-                        html.Label("Trace direction:", style={"fontWeight": "bold", "marginRight": "8px"}),
-                        dcc.RadioItems(
-                            id="direction",
-                            options=[
-                                {"label": "Upstream", "value": "up"},
-                                {"label": "Downstream", "value": "down"},
-                                {"label": "Both", "value": "both"}
-                            ],
-                            value="up",
-                            inline=True
-                        )
-                    ]
-                ),
-                dcc.Dropdown(
-                    id="signal-search",
-                    options=dropdown_options_from_search(""),
-                    placeholder="Search/select signal...",
-                    searchable=True,
-                    clearable=True,
-                    style={
-                        "width": "320px",
-                        "color": "#111827"
-                        }
-                    ),
-                html.Button(
-                    "Go",
-                    id="go-btn",
-                    n_clicks=0,
-                    style={
-                        "backgroundColor": NORMAL_SWC_COLOR,
-                        "color": "white",
-                        "border": "none",
-                        "padding": "8px 14px",
-                        "borderRadius": "8px",
-                        "cursor": "pointer",
-                        "fontWeight": "600"
-                    }
-                ),
-                html.Button(
-                    "Reset",
-                    id="reset-btn",
-                    n_clicks=0,
-                    style={
-                        "backgroundColor": "#2D3748",
-                        "color": "white",
-                        "border": f"1px solid {BOUNDARY_BORDER}",
-                        "padding": "8px 14px",
-                        "borderRadius": "8px",
-                        "cursor": "pointer",
-                        "fontWeight": "600"
-                    }
-                )
-            ]
-        ),
-
         html.Div(
             style={
                 "display": "flex",
-                "alignItems": "center",
-                "flexWrap": "wrap",
-                "marginBottom": "12px",
-                "padding": "10px 12px",
-                "background": PANEL_BG,
-                "border": f"1px solid {BOUNDARY_BORDER}",
-                "borderRadius": "12px"
+                "gap": "18px",
+                "alignItems": "stretch",
+                "flexWrap": "wrap"
             },
             children=[
-                html.Div(style=legend_box_style, children=[
-                    html.Span(style=legend_color_style(NORMAL_SWC_COLOR)),
-                    html.Span("Normal SWC")
-                ]),
-                html.Div(style=legend_box_style, children=[
-                    html.Span(style=legend_color_style(IMPACTED_SWC_COLOR)),
-                    html.Span("Impacted SWC")
-                ]),
-                html.Div(style=legend_box_style, children=[
-                    html.Span(style=legend_color_style(SELECTED_SIGNAL_COLOR)),
-                    html.Span("Selected signal")
-                ]),
-                html.Div(style=legend_box_style, children=[
-                    html.Span(style=legend_color_style(HIGHLIGHT_SIGNAL_COLOR)),
-                    html.Span("Impacted signal")
-                ])
+                html.Div(
+                    style={
+                        "flex": "0 1 460px",
+                        "background": PANEL_BG,
+                        "borderRadius": "14px",
+                        "padding": "22px",
+                        "border": "1px solid #222B36",
+                        "boxShadow": "0 12px 32px rgba(0,0,0,0.35)"
+                    },
+                    children=[
+                        html.Div(
+                            "INTERACTION MATRIX",
+                            style={
+                                "color": ACCENT_BLUE,
+                                "fontWeight": "700",
+                                "fontSize": "20px",
+                                "letterSpacing": "0.5px",
+                                "marginBottom": "8px"
+                            }
+                        ),
+                        html.H1(
+                            "Accelerating ADAS Issue Triage",
+                            style={
+                                "margin": "0 0 14px 0",
+                                "fontSize": "54px",
+                                "lineHeight": "1.05",
+                                "fontWeight": "700"
+                            }
+                        ),
+                        html.P(
+                            "Visualize cross-module signal dependencies, isolate impact paths, and"
+                            " identify ownership boundaries faster.",
+                            style={"color": TEXT_MUTED, "fontSize": "24px", "lineHeight": "1.35"}
+                        ),
+                        html.Div(
+                            style={
+                                "height": "4px",
+                                "width": "70%",
+                                "background": f"linear-gradient(90deg, {ACCENT_BLUE}, transparent)",
+                                "margin": "18px 0 20px 0"
+                            }
+                        ),
+                        html.Div(
+                            style={"display": "flex", "gap": "10px", "flexWrap": "wrap", "marginBottom": "18px"},
+                            children=[
+                                html.Div("Connected Signal Graph", style={
+                                    "padding": "8px 12px", "background": SURFACE_BG, "borderRadius": "999px",
+                                    "border": "1px solid #293443", "fontWeight": "600"
+                                }),
+                                html.Div("Upstream / Downstream Trace", style={
+                                    "padding": "8px 12px", "background": SURFACE_BG, "borderRadius": "999px",
+                                    "border": "1px solid #293443", "fontWeight": "600"
+                                }),
+                                html.Div("Owner & Impact Context", style={
+                                    "padding": "8px 12px", "background": SURFACE_BG, "borderRadius": "999px",
+                                    "border": "1px solid #293443", "fontWeight": "600"
+                                })
+                            ]
+                        ),
+                        html.Div(
+                            style={
+                                "display": "flex",
+                                "gap": "12px",
+                                "background": SURFACE_BG,
+                                "border": "1px solid #2B3745",
+                                "borderRadius": "12px",
+                                "padding": "12px",
+                                "marginBottom": "16px",
+                                "alignItems": "center"
+                            },
+                            children=[
+                                html.Img(
+                                    src="/assets/profile.jpg",
+                                    className="creator-photo",
+                                    style={
+                                        "width": "92px",
+                                        "height": "92px",
+                                        "borderRadius": "100%",
+                                        "objectFit": "cover",
+                                        "border": "2px solid #3E5368"
+                                    }
+                                ),
+                                html.Div(
+                                    children=[
+                                        html.Div(
+                                            "Created & owned by",
+                                            style={"fontSize": "12px", "color": TEXT_MUTED, "textTransform": "uppercase"}
+                                        ),
+                                        html.Div(
+                                            CREATOR_PROFILE["name"],
+                                            style={"fontSize": "24px", "fontWeight": "700", "lineHeight": "1.2"}
+                                        ),
+                                        html.Div(
+                                            CREATOR_PROFILE["title"],
+                                            style={"fontSize": "14px", "color": TEXT_MUTED, "lineHeight": "1.35"}
+                                        ),
+                                        html.Div(
+                                            f'{CREATOR_PROFILE["location"]} • {CREATOR_PROFILE["linkedin"]}',
+                                            style={"fontSize": "13px", "color": ACCENT_BLUE, "marginTop": "4px"}
+                                        )
+                                    ]
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            style={
+                                "display": "flex",
+                                "gap": "10px",
+                                "alignItems": "center",
+                                "flexWrap": "wrap",
+                                "marginBottom": "12px"
+                            },
+                            children=[
+                                html.Label("Trace direction", style={"fontWeight": "700", "color": TEXT_PRIMARY}),
+                                dcc.RadioItems(
+                                    id="direction",
+                                    className="trace-direction-options",
+                                    options=[
+                                        {"label": "Upstream", "value": "up"},
+                                        {"label": "Downstream", "value": "down"},
+                                        {"label": "Both", "value": "both"}
+                                    ],
+                                    value="up",
+                                    inline=True,
+                                    style={"color": TEXT_PRIMARY},
+                                    labelStyle={
+                                        "color": TEXT_PRIMARY,
+                                        "marginRight": "14px",
+                                        "fontWeight": "600"
+                                    },
+                                    inputStyle={"marginRight": "6px"}
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            style={"display": "flex", "gap": "10px", "alignItems": "center", "flexWrap": "wrap"},
+                            children=[
+                                dcc.Dropdown(
+                                    id="signal-search",
+                                    options=dropdown_options_from_search(""),
+                                    placeholder="Search/select signal...",
+                                    searchable=True,
+                                    clearable=True,
+                                    style={
+                                        "flex": "1 1 260px",
+                                        "minWidth": "220px",
+                                        "color": TEXT_DARK
+                                    }
+                                ),
+                                html.Button(
+                                    "Go",
+                                    id="go-btn",
+                                    n_clicks=0,
+                                    style={
+                                        "backgroundColor": ACCENT_BLUE,
+                                        "color": "white",
+                                        "border": "none",
+                                        "padding": "10px 16px",
+                                        "borderRadius": "10px",
+                                        "cursor": "pointer",
+                                        "fontWeight": "700"
+                                    }
+                                ),
+                                html.Button(
+                                    "Reset",
+                                    id="reset-btn",
+                                    n_clicks=0,
+                                    style={
+                                        "backgroundColor": SURFACE_BG,
+                                        "color": "white",
+                                        "border": "1px solid #314052",
+                                        "padding": "10px 16px",
+                                        "borderRadius": "10px",
+                                        "cursor": "pointer",
+                                        "fontWeight": "700"
+                                    }
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            style={
+                                "display": "flex",
+                                "alignItems": "center",
+                                "flexWrap": "wrap",
+                                "gap": "4px 8px",
+                                "marginTop": "14px",
+                                "paddingTop": "10px",
+                                "borderTop": "1px solid #273240"
+                            },
+                            children=[
+                                html.Div(style=legend_box_style, children=[
+                                    html.Span(style=legend_color_style(NORMAL_SWC_COLOR)),
+                                    html.Span("Normal SWC")
+                                ]),
+                                html.Div(style=legend_box_style, children=[
+                                    html.Span(style=legend_color_style(IMPACTED_SWC_COLOR)),
+                                    html.Span("Impacted SWC")
+                                ]),
+                                html.Div(style=legend_box_style, children=[
+                                    html.Span(style=legend_color_style(SELECTED_SIGNAL_COLOR)),
+                                    html.Span("Selected signal")
+                                ]),
+                                html.Div(style=legend_box_style, children=[
+                                    html.Span(style=legend_color_style(HIGHLIGHT_SIGNAL_COLOR)),
+                                    html.Span("Impacted signal")
+                                ])
+                            ]
+                        ),
+                        html.Div(
+                            id="status-text",
+                            children=DEFAULT_INFO,
+                            style={
+                                "marginTop": "12px",
+                                "padding": "12px",
+                                "background": SURFACE_BG,
+                                "border": "1px solid #2A3543",
+                                "borderRadius": "10px",
+                                "color": TEXT_MUTED
+                            }
+                        )
+                    ]
+                ),
+                html.Div(
+                    style={
+                        "flex": "1 1 780px",
+                        "minWidth": "520px",
+                        "background": "#0F131B",
+                        "borderRadius": "14px",
+                        "padding": "14px",
+                        "border": "1px solid #222B36",
+                        "boxShadow": "0 12px 32px rgba(0,0,0,0.35)"
+                    },
+                    children=[
+                        cyto.Cytoscape(
+                            id="graph",
+                            elements=elements,
+                            layout={"name": "preset", "fit": True, "padding": 30},
+                            style={
+                                "width": "100%",
+                                "height": "82vh",
+                                "minHeight": "760px",
+                                "border": "1px solid #334354",
+                                "borderRadius": "10px",
+                                "backgroundColor": GRAPH_CANVAS_BG
+                            },
+                            stylesheet=base_stylesheet(),
+                            minZoom=0.3,
+                            maxZoom=2.5,
+                            userZoomingEnabled=True,
+                            userPanningEnabled=True,
+                            boxSelectionEnabled=False,
+                            autoungrabify=False
+                        )
+                    ]
+                )
             ]
         ),
-
         html.Div(
-            id="status-text",
-            children=DEFAULT_INFO,
             style={
-                "marginBottom": "12px",
-                "padding": "10px 12px",
+                "marginTop": "18px",
                 "background": PANEL_BG,
-                "border": f"1px solid {BOUNDARY_BORDER}",
-                "borderRadius": "12px",
-                "color": TEXT_MUTED
-            }
-        ),
-
-        cyto.Cytoscape(
-            id="graph",
-            elements=elements,
-            layout={"name": "preset", "fit": True, "padding": 30},
-            style={
-                "width": "100%",
-                "height": "920px",
-                "border": f"1px solid {BOUNDARY_BORDER}",
-                "borderRadius": "12px",
-                "backgroundColor": APP_BG
-                },
-            stylesheet=base_stylesheet(),
-            minZoom=0.3,
-            maxZoom=2.5,
-            userZoomingEnabled=True,
-            userPanningEnabled=True,
-            boxSelectionEnabled=False,
-            autoungrabify=False
+                "border": "1px solid #222B36",
+                "borderRadius": "14px",
+                "padding": "18px 20px"
+            },
+            children=[
+                html.Div(
+                    "Portfolio Snapshot",
+                    style={"color": ACCENT_BLUE, "fontWeight": "700", "fontSize": "22px", "marginBottom": "6px"}
+                ),
+                html.Div(
+                    "Professional background highlights for recruiters and hiring managers.",
+                    style={"color": TEXT_MUTED, "marginBottom": "14px", "fontSize": "16px"}
+                ),
+                html.Div(
+                    style={"display": "grid", "gridTemplateColumns": "repeat(auto-fit, minmax(260px, 1fr))", "gap": "12px"},
+                    children=[
+                        html.Div(
+                            className="portfolio-card",
+                            children=[
+                                html.H4("Current Role", style={"marginTop": "0", "marginBottom": "8px"}),
+                                html.Div("Senior System Software Lead Engineer", style={"fontWeight": "700"}),
+                                html.Div("General Motors (Aug 2023 – Sep 2025)", style={"color": TEXT_MUTED, "marginBottom": "6px"}),
+                                html.Ul([
+                                    html.Li("Leads SDV software power management integration across 7 lead programs."),
+                                    html.Li("Orchestrated rollout across 60+ Tier 1 supplier ecosystems."),
+                                    html.Li("Reduced rework by 25% and improved support/adoption by 30%.")
+                                ])
+                            ]
+                        ),
+                        html.Div(
+                            className="portfolio-card",
+                            children=[
+                                html.H4("ADAS V&V Leadership", style={"marginTop": "0", "marginBottom": "8px"}),
+                                html.Div("Ford Motor Company (Sep 2017 – Jul 2023)", style={"fontWeight": "700", "marginBottom": "6px"}),
+                                html.Ul([
+                                    html.Li("Scaled global ADAS validation benches from 1 to 38."),
+                                    html.Li("Cut manual effort by 60% with CAN/LIN/ETH automation."),
+                                    html.Li("Accelerated cross-domain RCA turnaround by 40%.")
+                                ])
+                            ]
+                        ),
+                        html.Div(
+                            className="portfolio-card",
+                            children=[
+                                html.H4("Education & Certifications", style={"marginTop": "0", "marginBottom": "8px"}),
+                                html.Ul([
+                                    html.Li("M.S. Engineering Management — Trine University (May 2026)."),
+                                    html.Li("M.S. Electrical Engineering — UT Arlington."),
+                                    html.Li("B.E. Electrical Engineering — Gujarat Technological University."),
+                                    html.Li("DFSS Green Belt.")
+                                ])
+                            ]
+                        )
+                    ]
+                )
+            ]
         )
     ]
 )
@@ -895,4 +1088,5 @@ def update_view(tap_node_data, go_clicks, reset_clicks, direction, selected_sign
 server = app.server
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8050, debug=False)
+    port = int(os.environ.get("PORT", 8050))
+    app.run(host="0.0.0.0", port=port, debug=False)

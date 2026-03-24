@@ -1003,7 +1003,7 @@ app.layout = html.Div(
                         html.Div(
                             className="portfolio-card",
                             children=[
-                                html.H4("Current Role", style={"marginTop": "0", "marginBottom": "8px"}),
+                                html.H4("Most Recent Role", style={"marginTop": "0", "marginBottom": "8px"}),
                                 html.Div("Senior System Software Lead Engineer", style={"fontWeight": "700"}),
                                 html.Div("General Motors (Aug 2023 – Sep 2025)", style={"color": TEXT_MUTED, "marginBottom": "6px"}),
                                 html.Ul([

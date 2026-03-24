@@ -19,5 +19,7 @@ Notes:
 To show your own headshot in the "Created & owned by" section, add your image file at:
 
 - `assets/profile.jpg`
+- or `assets/profile.jpeg`
+- or `assets/profile.png`
 
-You can keep the same filename, or update the `html.Img(src="/assets/profile.jpg")` path in `app.py`.
+The app auto-detects these filenames and uses the first one it finds.

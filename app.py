@@ -81,6 +81,15 @@ CREATOR_PROFILE = {
     "linkedin": "linkedin.com/in/akashghoghe"
 }
 
+PROFILE_IMAGE_CANDIDATES = ["profile.jpg", "profile.jpeg", "profile.png", "profile.webp"]
+
+for image_name in PROFILE_IMAGE_CANDIDATES:
+    if (BASE_DIR / "assets" / image_name).exists():
+        PROFILE_IMAGE_SRC = f"/assets/{image_name}"
+        break
+else:
+    PROFILE_IMAGE_SRC = "/assets/profile.jpg"
+
 SYSTEM_BOUNDARY_ID = "SYSTEM_BOUNDARY"
 
 
@@ -773,7 +782,7 @@ app.layout = html.Div(
                             },
                             children=[
                                 html.Img(
-                                    src="/assets/profile.jpg",
+                                    src=PROFILE_IMAGE_SRC,
                                     className="creator-photo",
                                     style={
                                         "width": "92px",
@@ -798,8 +807,21 @@ app.layout = html.Div(
                                             style={"fontSize": "14px", "color": TEXT_MUTED, "lineHeight": "1.35"}
                                         ),
                                         html.Div(
-                                            f'{CREATOR_PROFILE["location"]} • {CREATOR_PROFILE["linkedin"]}',
-                                            style={"fontSize": "13px", "color": ACCENT_BLUE, "marginTop": "4px"}
+                                            style={"fontSize": "13px", "marginTop": "4px"},
+                                            children=[
+                                                html.Span(f'{CREATOR_PROFILE["location"]} • ', style={"color": TEXT_MUTED}),
+                                                html.A(
+                                                    CREATOR_PROFILE["linkedin"],
+                                                    href=f'https://{CREATOR_PROFILE["linkedin"]}',
+                                                    target="_blank",
+                                                    rel="noopener noreferrer",
+                                                    style={
+                                                        "color": ACCENT_BLUE,
+                                                        "textDecoration": "none",
+                                                        "fontWeight": "600"
+                                                    }
+                                                )
+                                            ]
                                         )
                                     ]
                                 )

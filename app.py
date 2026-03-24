@@ -7,6 +7,34 @@ from dash.dependencies import Input, Output, State
 import dash_cytoscape as cyto
 
 
+APP_BG = "#0F1117"
+PANEL_BG = "#171B22"
+BOUNDARY_BG = "#1A1F29"
+BOUNDARY_BORDER = "#4B5563"
+
+TEXT_PRIMARY = "#F3F4F6"
+TEXT_MUTED = "#C7CDD6"
+
+NORMAL_SWC_COLOR = "#4472C4"       # presentation-style blue
+NORMAL_SWC_BORDER = "#7EA6FF"
+
+IMPACTED_SWC_COLOR = "#D32F2F"     # red
+IMPACTED_SWC_BORDER = "#FF8A80"
+
+SELECTED_SIGNAL_COLOR = "#2E7D32"  # green
+SELECTED_SIGNAL_BORDER = "#81C784"
+
+HIGHLIGHT_SIGNAL_COLOR = "#FBC02D" # yellow
+HIGHLIGHT_SIGNAL_BORDER = "#FFE082"
+
+SIGNAL_IN_BG = "#2A303A"
+SIGNAL_OUT_BG = "#233327"
+SIGNAL_BORDER = "#6B7280"
+
+EDGE_COLOR = "#7C8CA5"
+EDGE_HIGHLIGHT = "#8AB4F8"
+BOUNDARY_EDGE = "#9AA4B2"
+
 # -----------------------------
 # Load data
 # -----------------------------
@@ -396,13 +424,13 @@ def base_stylesheet():
             "selector": 'node[type="boundary_box"]',
             "style": {
                 "shape": "round-rectangle",
-                "background-color": "#F5F5F5",
-                "background-opacity": 0.18,
-                "border-color": "#9E9E9E",
+                "background-color": BOUNDARY_BG,
+                "background-opacity": 0.35,
+                "border-color": BOUNDARY_BORDER,
                 "border-width": 2,
                 "border-style": "dashed",
                 "label": "data(label)",
-                "color": "#616161",
+                "color": TEXT_MUTED,
                 "font-size": 14,
                 "font-weight": "bold",
                 "text-valign": "top",
@@ -419,10 +447,10 @@ def base_stylesheet():
             "style": {
                 "shape": "round-rectangle",
                 "background-color": NORMAL_SWC_COLOR,
-                "border-color": "#0D47A1",
+                "border-color": NORMAL_SWC_BORDER,
                 "border-width": 2,
                 "label": "data(label)",
-                "color": "#0D47A1",
+                "color": TEXT_PRIMARY,
                 "font-size": 11,
                 "font-weight": "bold",
                 "text-valign": "bottom",
@@ -442,12 +470,12 @@ def base_stylesheet():
                 "shape": "round-rectangle",
                 "width": 120,
                 "height": 22,
-                "background-color": "#F5F5F5",
-                "border-color": "#5F6368",
+                "background-color": SIGNAL_IN_BG,
+                "border-color": SIGNAL_BORDER,
                 "border-width": 1,
                 "label": "data(label)",
                 "font-size": 8,
-                "color": "#202124",
+                "color": TEXT_PRIMARY,
                 "text-halign": "center",
                 "text-valign": "center",
                 "text-wrap": "wrap",
@@ -457,13 +485,13 @@ def base_stylesheet():
         {
             "selector": 'node[port_kind="in"]',
             "style": {
-                "background-color": "#ECEFF1"
+                "background-color": SIGNAL_IN_BG
             }
         },
         {
             "selector": 'node[port_kind="out"]',
             "style": {
-                "background-color": "#E8F5E9"
+                "background-color": SIGNAL_OUT_BG
             }
         },
         {
@@ -481,8 +509,8 @@ def base_stylesheet():
             "selector": "edge",
             "style": {
                 "width": 2,
-                "line-color": "#90A4AE",
-                "target-arrow-color": "#90A4AE",
+                "line-color": EDGE_COLOR,
+                "target-arrow-color": EDGE_COLOR,
                 "target-arrow-shape": "triangle",
                 "curve-style": "bezier"
             }
@@ -503,8 +531,8 @@ def base_stylesheet():
             "selector": 'edge[edge_type="boundary_in"]',
             "style": {
                 "line-style": "solid",
-                "line-color": "#616161",
-                "target-arrow-color": "#616161",
+                "line-color": BOUNDARY_EDGE,
+                "target-arrow-color": BOUNDARY_EDGE,
                 "width": 2
             }
         },
@@ -512,8 +540,8 @@ def base_stylesheet():
             "selector": 'edge[edge_type="boundary_out"]',
             "style": {
                 "line-style": "solid",
-                "line-color": "#616161",
-                "target-arrow-color": "#616161",
+                "line-color": BOUNDARY_EDGE,
+                "target-arrow-color": BOUNDARY_EDGE,
                 "width": 2
             }
         }
@@ -572,7 +600,7 @@ def build_highlight_styles(selected_node_id, direction):
             "selector": f'node[id = "{swc_id}"]',
             "style": {
                 "background-color": IMPACTED_SWC_COLOR,
-                "border-color": "#8E0000"
+                "border-color": IMPACTED_SWC_BORDER
             }
         })
 
@@ -583,8 +611,9 @@ def build_highlight_styles(selected_node_id, direction):
                 "selector": f'node[id = "{node_id}"]',
                 "style": {
                     "background-color": HIGHLIGHT_SIGNAL_COLOR,
-                    "border-color": "#F57F17",
-                    "border-width": 2
+                    "border-color": HIGHLIGHT_SIGNAL_BORDER,
+                    "border-width": 2,
+                    "color": "#111827"
                 }
             })
 
@@ -594,7 +623,7 @@ def build_highlight_styles(selected_node_id, direction):
             "selector": f'node[id = "{selected_node_id}"]',
             "style": {
                 "background-color": SELECTED_SIGNAL_COLOR,
-                "border-color": "#1B5E20",
+                "border-color": SELECTED_SIGNAL_BORDER,
                 "border-width": 3,
                 "color": "white"
             }
@@ -631,29 +660,50 @@ legend_box_style = {
     "display": "flex",
     "alignItems": "center",
     "gap": "6px",
-    "marginRight": "18px"
+    "marginRight": "18px",
+    "color": TEXT_PRIMARY
 }
 
 legend_color_style = lambda color: {
     "width": "18px",
     "height": "18px",
     "backgroundColor": color,
-    "border": "1px solid #444",
+    "border": "1px solid rgba(255,255,255,0.25)",
+    "borderRadius": "4px",
     "display": "inline-block"
 }
 
 app.layout = html.Div(
-    style={"fontFamily": "Arial, sans-serif", "padding": "12px"},
+    style={
+        "fontFamily": "Aptos, Calibri, Arial, sans-serif",
+        "padding": "16px",
+        "backgroundColor": APP_BG,
+        "minHeight": "100vh",
+        "color": TEXT_PRIMARY
+    },
     children=[
-        html.H2("SWC Signal Dependency Viewer"),
+        html.H2(
+            "SWC Signal Dependency Viewer",
+            style={
+                "marginTop": "0",
+                "marginBottom": "12px",
+                "color": TEXT_PRIMARY,
+                "fontWeight": "700",
+                "letterSpacing": "0.2px"
+            }
+        ),
 
         html.Div(
             style={
-                "display": "flex",
-                "gap": "16px",
-                "alignItems": "center",
-                "flexWrap": "wrap",
-                "marginBottom": "12px"
+                 "display": "flex",
+                 "gap": "16px",
+                 "alignItems": "center",
+                 "flexWrap": "wrap",
+                 "marginBottom": "12px",
+                 "padding": "12px",
+                 "background": PANEL_BG,
+                 "border": f"1px solid {BOUNDARY_BORDER}",
+                 "borderRadius": "12px"
             },
             children=[
                 html.Div(
@@ -677,10 +727,39 @@ app.layout = html.Div(
                     placeholder="Search/select signal...",
                     searchable=True,
                     clearable=True,
-                    style={"width": "320px"}
+                    style={
+                        "width": "320px",
+                        "color": "#111827"
+                        }
+                    ),
+                html.Button(
+                    "Go",
+                    id="go-btn",
+                    n_clicks=0,
+                    style={
+                        "backgroundColor": NORMAL_SWC_COLOR,
+                        "color": "white",
+                        "border": "none",
+                        "padding": "8px 14px",
+                        "borderRadius": "8px",
+                        "cursor": "pointer",
+                        "fontWeight": "600"
+                    }
                 ),
-                html.Button("Go", id="go-btn", n_clicks=0),
-                html.Button("Reset", id="reset-btn", n_clicks=0)
+                html.Button(
+                    "Reset",
+                    id="reset-btn",
+                    n_clicks=0,
+                    style={
+                        "backgroundColor": "#2D3748",
+                        "color": "white",
+                        "border": f"1px solid {BOUNDARY_BORDER}",
+                        "padding": "8px 14px",
+                        "borderRadius": "8px",
+                        "cursor": "pointer",
+                        "fontWeight": "600"
+                    }
+                )
             ]
         ),
 
@@ -690,9 +769,10 @@ app.layout = html.Div(
                 "alignItems": "center",
                 "flexWrap": "wrap",
                 "marginBottom": "12px",
-                "padding": "8px 10px",
-                "background": "#FAFAFA",
-                "border": "1px solid #DDD"
+                "padding": "10px 12px",
+                "background": PANEL_BG,
+                "border": f"1px solid {BOUNDARY_BORDER}",
+                "borderRadius": "12px"
             },
             children=[
                 html.Div(style=legend_box_style, children=[
@@ -718,10 +798,12 @@ app.layout = html.Div(
             id="status-text",
             children=DEFAULT_INFO,
             style={
-                "marginBottom": "10px",
-                "padding": "8px",
-                "background": "#F7F7F7",
-                "border": "1px solid #DDD"
+                "marginBottom": "12px",
+                "padding": "10px 12px",
+                "background": PANEL_BG,
+                "border": f"1px solid {BOUNDARY_BORDER}",
+                "borderRadius": "12px",
+                "color": TEXT_MUTED
             }
         ),
 
@@ -729,7 +811,13 @@ app.layout = html.Div(
             id="graph",
             elements=elements,
             layout={"name": "preset", "fit": True, "padding": 30},
-            style={"width": "100%", "height": "920px", "border": "1px solid #CCC"},
+            style={
+                "width": "100%",
+                "height": "920px",
+                "border": f"1px solid {BOUNDARY_BORDER}",
+                "borderRadius": "12px",
+                "backgroundColor": APP_BG
+                },
             stylesheet=base_stylesheet(),
             minZoom=0.3,
             maxZoom=2.5,
@@ -804,9 +892,7 @@ def update_view(tap_node_data, go_clicks, reset_clicks, direction, selected_sign
 
     return base_stylesheet(), DEFAULT_INFO, selected_signal_name
 
-
-import os
+server = app.server
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8050))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=8050, debug=False)

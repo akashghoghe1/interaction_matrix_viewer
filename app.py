@@ -1,4 +1,6 @@
 import json
+import os
+from pathlib import Path
 from collections import defaultdict
 
 import networkx as nx
@@ -38,7 +40,10 @@ BOUNDARY_EDGE = "#9AA4B2"
 # -----------------------------
 # Load data
 # -----------------------------
-with open("swc_data.json", "r", encoding="utf-8") as f:
+BASE_DIR = Path(__file__).resolve().parent
+DATA_FILE = BASE_DIR / "swc_data.json"
+
+with DATA_FILE.open("r", encoding="utf-8") as f:
     data = json.load(f)
 
 swcs = data["swcs"]
@@ -895,4 +900,5 @@ def update_view(tap_node_data, go_clicks, reset_clicks, direction, selected_sign
 server = app.server
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8050, debug=False)
+    port = int(os.environ.get("PORT", 8050))
+    app.run(host="0.0.0.0", port=port, debug=False)

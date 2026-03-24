@@ -11,3 +11,5 @@ Use a **Python Web Service** with:
 Notes:
 - The app reads `PORT` automatically in local run mode (`python app.py`) and defaults to `8050`.
 - `gunicorn` is included in `requirements.txt` for Render production startup.
+- If Render shows a Python syntax error that references `diff/index` text, trigger a **Clear build cache & deploy**
+  so the service uses the latest clean source snapshot.
